@@ -1,0 +1,1132 @@
+{
+  "generated_at": "2026-11-10T18:21:23.795897-05:00",
+  "machine_note": "Collected on the paper-run host. Hardware/software details are in 1_computing_environment; hostname omitted for release.",
+  "1_computing_environment": {
+    "cpu_model": "Intel(R) Core(TM) i7-14700K",
+    "logical_cpus": 28,
+    "physical_cores_per_socket": 20,
+    "threads_per_core": 2,
+    "poly_lp_process_pool_workers": 27,
+    "ram_gb": 62.5,
+    "os": "Linux Mint 21.1",
+    "kernel": "5.15.0-130-generic",
+    "python": "3.10.12",
+    "numpy": "1.26.4",
+    "scipy": "1.15.3",
+    "highs": {
+      "via": "scipy.optimize linprog method=\"highs\" (scipy.optimize._highspy)",
+      "version": "1.8.0",
+      "standalone_highspy_package": false
+    },
+    "gpu": "none",
+    "notes": [
+      "Poly LPs use ProcessPoolExecutor with n_workers = max(1, min(n_horizons, cpu_count()-1)) = 27 on this machine.",
+      "No CUDA/GPU path in the paper pipeline."
+    ]
+  },
+  "2_seeds_and_trajectories": {
+    "examples": [
+      {
+        "example": "mass_spring_damper",
+        "family": "LQG",
+        "seed": 20261026,
+        "n_traj": 20000,
+        "config_n_draw": 800,
+        "seed_source": "config.json simulation.seed (= plot_continuous_paper.SEED)"
+      },
+      {
+        "example": "coupled_masses",
+        "family": "LQG",
+        "seed": 20261026,
+        "n_traj": 20000,
+        "config_n_draw": 800,
+        "seed_source": "config.json simulation.seed (= plot_continuous_paper.SEED)"
+      },
+      {
+        "example": "quarter_car",
+        "family": "LQG",
+        "seed": 20261026,
+        "n_traj": 20000,
+        "config_n_draw": 800,
+        "seed_source": "config.json simulation.seed (= plot_continuous_paper.SEED)"
+      },
+      {
+        "example": "two_room_thermal",
+        "family": "LQG",
+        "seed": 20261026,
+        "n_traj": 20000,
+        "config_n_draw": 800,
+        "seed_source": "config.json simulation.seed (= plot_continuous_paper.SEED)"
+      },
+      {
+        "example": "cartpole_linear",
+        "family": "LQG",
+        "seed": 20261026,
+        "n_traj": 20000,
+        "config_n_draw": 800,
+        "seed_source": "config.json simulation.seed (= plot_continuous_paper.SEED)"
+      },
+      {
+        "example": "bridge_patrol",
+        "family": "finite",
+        "seed": 20261109,
+        "n_traj": 20000,
+        "seed_source": "experiments/finite_pomdps/run_bridge_patrol.py SEED"
+      },
+      {
+        "example": "tiger",
+        "family": "finite",
+        "seed": 0,
+        "n_traj": 20000,
+        "config_n_draw": 800,
+        "seed_source": "config.json simulation.seed"
+      },
+      {
+        "example": "network",
+        "family": "finite",
+        "seed": 0,
+        "n_traj": 20000,
+        "config_n_draw": 800,
+        "seed_source": "config.json simulation.seed"
+      },
+      {
+        "example": "shopping5",
+        "family": "finite",
+        "seed": 0,
+        "n_traj": 20000,
+        "config_n_draw": 800,
+        "seed_source": "config.json simulation.seed"
+      }
+    ],
+    "figures": [
+      {
+        "figure": "main_examples_msd_bridge.pdf",
+        "script": "experiments/finite_pomdps/plot_main_examples_msd_bridge.py",
+        "n_traj_simulated": 20000,
+        "n_traj_drawn": 500,
+        "draw_rule": "np.linspace(0, n-1, min(500,n))",
+        "note": "config n_draw=800 is NOT used by this script; figure hardcodes 500."
+      },
+      {
+        "figure": "additional_examples.pdf",
+        "script": "experiments/lqg/plot_additional_examples.py",
+        "n_traj_simulated": 20000,
+        "n_traj_drawn": 500,
+        "draw_rule": "reuses draw_pair from plot_main_examples_msd_bridge.py (min(500,n))",
+        "note": "Same 500-trajectory subsample rule as the main figure."
+      }
+    ]
+  },
+  "3_run_times": {
+    "horizon": "t=1..100 unless noted",
+    "rows": [
+      {
+        "example": "mass_spring_damper",
+        "family": "LQG",
+        "model_build_s": {
+          "value": 6.7,
+          "meaning": "closed-form quadratic-form + MGF Chernoff for t=1..100 (serial loop in plot_continuous_paper)",
+          "parallel": false,
+          "source": "data/runs/diagnostics_v2/paper_continuous_rerun.log (\"closed-form MGF series in Xs\")",
+          "timing_only_rerun_s": 5.723089216277003
+        },
+        "mgf_limits_s": {
+          "value": "included_in_model_build",
+          "note": "MGF limits are computed inside analyze_horizon together with the quadratic form; not timed separately in stored logs.",
+          "missing_separate": true
+        },
+        "poly_limits_d16_s": {
+          "value": 325.1,
+          "parallel": true,
+          "workers": 27,
+          "source": "paper_continuous_rerun.log (\"polynomial series in Xs\", workers=27)"
+        },
+        "monte_carlo_s": {
+          "value": 0.272,
+          "parallel": false,
+          "n_traj": 20000,
+          "source": "TIMING-ONLY rerun (simulate_continuous); paper path reused continuous_C.npz and did not log StageTimer for MC.",
+          "flag": "timing_only_rerun"
+        },
+        "total_s": {
+          "value": 332.072,
+          "note": "Sum of logged form+MGF + logged poly + timing-only MC. Not a single wall-clock StageTimer.",
+          "flag": "estimated_sum"
+        },
+        "state_dim": 2,
+        "gaussian_vector_dim_T100": 298
+      },
+      {
+        "example": "coupled_masses",
+        "family": "LQG",
+        "model_build_s": {
+          "value": 8.9,
+          "meaning": "closed-form quadratic-form + MGF Chernoff for t=1..100 (serial loop in plot_continuous_paper)",
+          "parallel": false,
+          "source": "data/runs/diagnostics_v2/paper_continuous_rerun.log (\"closed-form MGF series in Xs\")",
+          "timing_only_rerun_s": 8.92230899259448
+        },
+        "mgf_limits_s": {
+          "value": "included_in_model_build",
+          "note": "MGF limits are computed inside analyze_horizon together with the quadratic form; not timed separately in stored logs.",
+          "missing_separate": true
+        },
+        "poly_limits_d16_s": {
+          "value": 335.1,
+          "parallel": true,
+          "workers": 27,
+          "source": "paper_continuous_rerun.log (\"polynomial series in Xs\", workers=27)"
+        },
+        "monte_carlo_s": {
+          "value": 0.437,
+          "parallel": false,
+          "n_traj": 20000,
+          "source": "TIMING-ONLY rerun (simulate_continuous); paper path reused continuous_C.npz and did not log StageTimer for MC.",
+          "flag": "timing_only_rerun"
+        },
+        "total_s": {
+          "value": 344.437,
+          "note": "Sum of logged form+MGF + logged poly + timing-only MC. Not a single wall-clock StageTimer.",
+          "flag": "estimated_sum"
+        },
+        "state_dim": 4,
+        "gaussian_vector_dim_T100": 496
+      },
+      {
+        "example": "quarter_car",
+        "family": "LQG",
+        "model_build_s": {
+          "value": 5.3,
+          "meaning": "closed-form quadratic-form + MGF Chernoff for t=1..100 (serial loop in plot_continuous_paper)",
+          "parallel": false,
+          "source": "data/runs/diagnostics_v2/paper_continuous_rerun.log (\"closed-form MGF series in Xs\")",
+          "timing_only_rerun_s": 5.576093596406281
+        },
+        "mgf_limits_s": {
+          "value": "included_in_model_build",
+          "note": "MGF limits are computed inside analyze_horizon together with the quadratic form; not timed separately in stored logs.",
+          "missing_separate": true
+        },
+        "poly_limits_d16_s": {
+          "value": 253.5,
+          "parallel": true,
+          "workers": 27,
+          "source": "paper_continuous_rerun.log (\"polynomial series in Xs\", workers=27)"
+        },
+        "monte_carlo_s": {
+          "value": 0.521,
+          "parallel": false,
+          "n_traj": 20000,
+          "source": "TIMING-ONLY rerun (simulate_continuous); paper path reused continuous_C.npz and did not log StageTimer for MC.",
+          "flag": "timing_only_rerun"
+        },
+        "total_s": {
+          "value": 259.321,
+          "note": "Sum of logged form+MGF + logged poly + timing-only MC. Not a single wall-clock StageTimer.",
+          "flag": "estimated_sum"
+        },
+        "state_dim": 4,
+        "gaussian_vector_dim_T100": 205
+      },
+      {
+        "example": "two_room_thermal",
+        "family": "LQG",
+        "model_build_s": {
+          "value": 7.1,
+          "meaning": "closed-form quadratic-form + MGF Chernoff for t=1..100 (serial loop in plot_continuous_paper)",
+          "parallel": false,
+          "source": "data/runs/diagnostics_v2/paper_continuous_rerun.log (\"closed-form MGF series in Xs\")",
+          "timing_only_rerun_s": 7.911711294203997
+        },
+        "mgf_limits_s": {
+          "value": "included_in_model_build",
+          "note": "MGF limits are computed inside analyze_horizon together with the quadratic form; not timed separately in stored logs.",
+          "missing_separate": true
+        },
+        "poly_limits_d16_s": {
+          "value": 383.9,
+          "parallel": true,
+          "workers": 27,
+          "source": "paper_continuous_rerun.log (\"polynomial series in Xs\", workers=27)"
+        },
+        "monte_carlo_s": {
+          "value": 0.312,
+          "parallel": false,
+          "n_traj": 20000,
+          "source": "TIMING-ONLY rerun (simulate_continuous); paper path reused continuous_C.npz and did not log StageTimer for MC.",
+          "flag": "timing_only_rerun"
+        },
+        "total_s": {
+          "value": 391.312,
+          "note": "Sum of logged form+MGF + logged poly + timing-only MC. Not a single wall-clock StageTimer.",
+          "flag": "estimated_sum"
+        },
+        "state_dim": 2,
+        "gaussian_vector_dim_T100": 398
+      },
+      {
+        "example": "cartpole_linear",
+        "family": "LQG",
+        "model_build_s": {
+          "value": 8.2,
+          "meaning": "closed-form quadratic-form + MGF Chernoff for t=1..100 (serial loop in plot_continuous_paper)",
+          "parallel": false,
+          "source": "data/runs/diagnostics_v2/paper_continuous_rerun.log (\"closed-form MGF series in Xs\")",
+          "timing_only_rerun_s": 9.01916859857738
+        },
+        "mgf_limits_s": {
+          "value": "included_in_model_build",
+          "note": "MGF limits are computed inside analyze_horizon together with the quadratic form; not timed separately in stored logs.",
+          "missing_separate": true
+        },
+        "poly_limits_d16_s": {
+          "value": 324.5,
+          "parallel": true,
+          "workers": 27,
+          "source": "paper_continuous_rerun.log (\"polynomial series in Xs\", workers=27)"
+        },
+        "monte_carlo_s": {
+          "value": 0.456,
+          "parallel": false,
+          "n_traj": 20000,
+          "source": "TIMING-ONLY rerun (simulate_continuous); paper path reused continuous_C.npz and did not log StageTimer for MC.",
+          "flag": "timing_only_rerun"
+        },
+        "total_s": {
+          "value": 333.156,
+          "note": "Sum of logged form+MGF + logged poly + timing-only MC. Not a single wall-clock StageTimer.",
+          "flag": "estimated_sum"
+        },
+        "state_dim": 4,
+        "gaussian_vector_dim_T100": 496
+      },
+      {
+        "example": "bridge_patrol",
+        "family": "finite",
+        "model_build_s": {
+          "value": 0.0024896785616874695,
+          "parallel": false,
+          "source": "data/runs/finite_pomdps/bridge_patrol/summary.json profiling.stage_seconds[build]"
+        },
+        "mgf_limits_s": {
+          "value": 0.22360388468950987,
+          "parallel": false,
+          "source": "profiling.stage_seconds[mgf]",
+          "note": "Includes xi-recursion over the eta grid for t=1..100."
+        },
+        "poly_limits_d16_s": {
+          "value": 148.67916370369494,
+          "parallel": true,
+          "workers": 27,
+          "source": "profiling.stage_seconds[poly]; workers=27 confirmed in bridge_patrol_run.log; same default formula for other finite runs (not always logged).",
+          "workers_source_flag": "logged"
+        },
+        "monte_carlo_s": {
+          "value": 0.2959425002336502,
+          "parallel": false,
+          "n_traj": 20000,
+          "source": "profiling.stage_seconds[simulate]"
+        },
+        "total_s": {
+          "value": 161.99740385543555,
+          "parallel": false,
+          "source": "summary.json wall_seconds / profiling.wall_seconds",
+          "note": "Includes ancillary stages (e.g. bridge pdf_validation, martingale) when present."
+        },
+        "product_chain_states": 232
+      },
+      {
+        "example": "tiger",
+        "family": "finite",
+        "model_build_s": {
+          "value": 0.0002315286546945572,
+          "parallel": false,
+          "source": "data/runs/finite_pomdps/tiger_tiger_hand/summary.json profiling.stage_seconds[build_product]"
+        },
+        "mgf_limits_s": {
+          "value": 0.0763338515534997,
+          "parallel": false,
+          "source": "profiling.stage_seconds[mgf]",
+          "note": "Includes xi-recursion over the eta grid for t=1..100."
+        },
+        "poly_limits_d16_s": {
+          "value": 125.31537215039134,
+          "parallel": true,
+          "workers": 27,
+          "source": "profiling.stage_seconds[poly]; workers=27 confirmed in bridge_patrol_run.log; same default formula for other finite runs (not always logged).",
+          "workers_source_flag": "inferred_same_default"
+        },
+        "monte_carlo_s": {
+          "value": 0.13131001591682434,
+          "parallel": false,
+          "n_traj": 20000,
+          "source": "profiling.stage_seconds[simulate]"
+        },
+        "total_s": {
+          "value": 125.55947765987366,
+          "parallel": false,
+          "source": "summary.json wall_seconds / profiling.wall_seconds",
+          "note": "Includes ancillary stages (e.g. bridge pdf_validation, martingale) when present."
+        },
+        "product_chain_states": 24
+      },
+      {
+        "example": "network",
+        "family": "finite",
+        "model_build_s": {
+          "value": 0.00048376526683568954,
+          "parallel": false,
+          "source": "data/runs/finite_pomdps/network_network_hand/summary.json profiling.stage_seconds[build_product]"
+        },
+        "mgf_limits_s": {
+          "value": 0.0933162672445178,
+          "parallel": false,
+          "source": "profiling.stage_seconds[mgf]",
+          "note": "Includes xi-recursion over the eta grid for t=1..100."
+        },
+        "poly_limits_d16_s": {
+          "value": 160.4044231241569,
+          "parallel": true,
+          "workers": 27,
+          "source": "profiling.stage_seconds[poly]; workers=27 confirmed in bridge_patrol_run.log; same default formula for other finite runs (not always logged).",
+          "workers_source_flag": "inferred_same_default"
+        },
+        "monte_carlo_s": {
+          "value": 0.1593536427244544,
+          "parallel": false,
+          "n_traj": 20000,
+          "source": "profiling.stage_seconds[simulate]"
+        },
+        "total_s": {
+          "value": 160.68700709659606,
+          "parallel": false,
+          "source": "summary.json wall_seconds / profiling.wall_seconds",
+          "note": "Includes ancillary stages (e.g. bridge pdf_validation, martingale) when present."
+        },
+        "product_chain_states": 31
+      },
+      {
+        "example": "shopping5",
+        "family": "finite",
+        "model_build_s": {
+          "value": 1.116669281385839,
+          "parallel": false,
+          "source": "data/runs/finite_pomdps/shopping5_shopping_hand/summary.json profiling.stage_seconds[build_product]"
+        },
+        "mgf_limits_s": {
+          "value": 0.17995123006403446,
+          "parallel": false,
+          "source": "profiling.stage_seconds[mgf]",
+          "note": "Includes xi-recursion over the eta grid for t=1..100."
+        },
+        "poly_limits_d16_s": {
+          "value": 204.61479564663023,
+          "parallel": true,
+          "workers": 27,
+          "source": "profiling.stage_seconds[poly]; workers=27 confirmed in bridge_patrol_run.log; same default formula for other finite runs (not always logged).",
+          "workers_source_flag": "inferred_same_default"
+        },
+        "monte_carlo_s": {
+          "value": 1.8399161593988538,
+          "parallel": false,
+          "n_traj": 20000,
+          "source": "profiling.stage_seconds[simulate]"
+        },
+        "total_s": {
+          "value": 209.97893640771508,
+          "parallel": false,
+          "source": "summary.json wall_seconds / profiling.wall_seconds",
+          "note": "Includes ancillary stages (e.g. bridge pdf_validation, martingale) when present."
+        },
+        "product_chain_states": 1675
+      }
+    ]
+  },
+  "4_truncation_correction": {
+    "rows": [
+      {
+        "example": "mass_spring_damper",
+        "max_rel_L_over_tips_25_50_100": 2.341015543106467e-16,
+        "max_rel_U_over_tips_25_50_100": 0.0,
+        "tips": {
+          "25": {
+            "old_L": 3.7939877089476113,
+            "old_U": 5.2782781575924,
+            "new_L": 3.793987708947612,
+            "new_U": 5.2782781575924,
+            "rel_L": 2.341015543106467e-16,
+            "rel_U": 0.0
+          },
+          "50": {
+            "old_L": 3.901615220203788,
+            "old_U": 5.565136289408896,
+            "new_L": 3.901615220203788,
+            "new_U": 5.565136289408896,
+            "rel_L": 0.0,
+            "rel_U": 0.0
+          },
+          "100": {
+            "old_L": 4.134613756497983,
+            "old_U": 5.952341538976061,
+            "new_L": 4.134613756497983,
+            "new_U": 5.952341538976061,
+            "rel_L": 0.0,
+            "rel_U": 0.0
+          }
+        },
+        "all_t_flag": "MISSING: pre-truncation snapshot only stores t in {25,50,100} (poly_bounds_pre_truncation_correction.json); full-horizon pre-correction curves were not saved.",
+        "max_eps_t_over_tips": 9.985888737984142e-43,
+        "max_eps_t_over_audit_tips_source": "truncation_consistency_fix_report per_t",
+        "max_added_correction_over_all_t": 4.720770773400756e-22,
+        "max_added_correction_over_tips": 3.636944435585945e-22,
+        "max_added_correction_meaning": "max_t of (sqrt(Eq2_up * eps_out) + eps_out) inside TailLP bound()",
+        "baseline": "data/runs/diagnostics_v2/poly_bounds_pre_truncation_correction.json",
+        "corrected": "data/runs/continuous_baselines/<ex>/paper_continuous_arrays.npz (post consistency-fix audit)"
+      },
+      {
+        "example": "coupled_masses",
+        "max_rel_L_over_tips_25_50_100": 0.0,
+        "max_rel_U_over_tips_25_50_100": 0.0,
+        "tips": {
+          "25": {
+            "old_L": 1.7821092823376334,
+            "old_U": 3.3609899609835407,
+            "new_L": 1.7821092823376334,
+            "new_U": 3.3609899609835407,
+            "rel_L": 0.0,
+            "rel_U": 0.0
+          },
+          "50": {
+            "old_L": 2.0517535814286276,
+            "old_U": 6.324679047877892,
+            "new_L": 2.0517535814286276,
+            "new_U": 6.324679047877892,
+            "rel_L": 0.0,
+            "rel_U": 0.0
+          },
+          "100": {
+            "old_L": 2.4890081469690735,
+            "old_U": 10.100317542383547,
+            "new_L": 2.4890081469690735,
+            "new_U": 10.100317542383547,
+            "rel_L": 0.0,
+            "rel_U": 0.0
+          }
+        },
+        "all_t_flag": "MISSING: pre-truncation snapshot only stores t in {25,50,100} (poly_bounds_pre_truncation_correction.json); full-horizon pre-correction curves were not saved.",
+        "max_eps_t_over_tips": 5.6467606072339786e-24,
+        "max_eps_t_over_audit_tips_source": "truncation_consistency_fix_report per_t",
+        "max_added_correction_over_all_t": 2.3489357128585055e-12,
+        "max_added_correction_over_tips": 2.337957336853417e-12,
+        "max_added_correction_meaning": "max_t of (sqrt(Eq2_up * eps_out) + eps_out) inside TailLP bound()",
+        "baseline": "data/runs/diagnostics_v2/poly_bounds_pre_truncation_correction.json",
+        "corrected": "data/runs/continuous_baselines/<ex>/paper_continuous_arrays.npz (post consistency-fix audit)"
+      },
+      {
+        "example": "quarter_car",
+        "max_rel_L_over_tips_25_50_100": 1.0,
+        "max_rel_U_over_tips_25_50_100": 4.0108821616166395e-16,
+        "tips": {
+          "25": {
+            "old_L": 57.652694484812855,
+            "old_U": 761.7781073727119,
+            "new_L": 0.0,
+            "new_U": 761.7781073727119,
+            "rel_L": 1.0,
+            "rel_U": 0.0
+          },
+          "50": {
+            "old_L": 219.74166025343402,
+            "old_U": 1326.9573760514213,
+            "new_L": 219.74166025343402,
+            "new_U": 1326.9573760514213,
+            "rel_L": 0.0,
+            "rel_U": 0.0
+          },
+          "100": {
+            "old_L": 629.6077501211794,
+            "old_U": 2267.5677447635217,
+            "new_L": 629.6077501211794,
+            "new_U": 2267.5677447635226,
+            "rel_L": 0.0,
+            "rel_U": 4.0108821616166395e-16
+          }
+        },
+        "all_t_flag": "MISSING: pre-truncation snapshot only stores t in {25,50,100} (poly_bounds_pre_truncation_correction.json); full-horizon pre-correction curves were not saved.",
+        "max_eps_t_over_tips": 3.0295519406392416e-19,
+        "max_eps_t_over_audit_tips_source": "truncation_consistency_fix_report per_t",
+        "max_added_correction_over_all_t": 4.602031979224831e-05,
+        "max_added_correction_over_tips": 3.251774314531015e-10,
+        "max_added_correction_meaning": "max_t of (sqrt(Eq2_up * eps_out) + eps_out) inside TailLP bound()",
+        "baseline": "data/runs/diagnostics_v2/poly_bounds_pre_truncation_correction.json",
+        "corrected": "data/runs/continuous_baselines/<ex>/paper_continuous_arrays.npz (post consistency-fix audit)"
+      },
+      {
+        "example": "two_room_thermal",
+        "max_rel_L_over_tips_25_50_100": 1.511274194607804e-16,
+        "max_rel_U_over_tips_25_50_100": 2.1230051803565554e-16,
+        "tips": {
+          "25": {
+            "old_L": 205.14366282309996,
+            "old_U": 246.0233120049009,
+            "new_L": 205.14366282309996,
+            "new_U": 246.0233120049009,
+            "rel_L": 0.0,
+            "rel_U": 0.0
+          },
+          "50": {
+            "old_L": 303.3490464503626,
+            "old_U": 391.1932743615788,
+            "new_L": 303.3490464503626,
+            "new_U": 391.1932743615788,
+            "rel_L": 0.0,
+            "rel_U": 0.0
+          },
+          "100": {
+            "old_L": 376.12909069462177,
+            "old_U": 535.4995775494175,
+            "new_L": 376.1290906946217,
+            "new_U": 535.4995775494176,
+            "rel_L": 1.511274194607804e-16,
+            "rel_U": 2.1230051803565554e-16
+          }
+        },
+        "all_t_flag": "MISSING: pre-truncation snapshot only stores t in {25,50,100} (poly_bounds_pre_truncation_correction.json); full-horizon pre-correction curves were not saved.",
+        "max_eps_t_over_tips": 1.465342358668087e-106,
+        "max_eps_t_over_audit_tips_source": "truncation_consistency_fix_report per_t",
+        "max_added_correction_over_all_t": 2.959040544460284e-44,
+        "max_added_correction_over_tips": 6.094447114658676e-54,
+        "max_added_correction_meaning": "max_t of (sqrt(Eq2_up * eps_out) + eps_out) inside TailLP bound()",
+        "baseline": "data/runs/diagnostics_v2/poly_bounds_pre_truncation_correction.json",
+        "corrected": "data/runs/continuous_baselines/<ex>/paper_continuous_arrays.npz (post consistency-fix audit)"
+      },
+      {
+        "example": "cartpole_linear",
+        "max_rel_L_over_tips_25_50_100": 0.0,
+        "max_rel_U_over_tips_25_50_100": 9.459116503004173e-05,
+        "tips": {
+          "25": {
+            "old_L": 0.5915331417722385,
+            "old_U": 2.9936344518628646,
+            "new_L": 0.5915331417722385,
+            "new_U": 2.9936344518628646,
+            "rel_L": 0.0,
+            "rel_U": 0.0
+          },
+          "50": {
+            "old_L": 1.0052845021210928,
+            "old_U": 5.34875946457673,
+            "new_L": 1.0052845021210928,
+            "new_U": 5.34926540996595,
+            "rel_L": 0.0,
+            "rel_U": 9.459116503004173e-05
+          },
+          "100": {
+            "old_L": 2.0924775130531543,
+            "old_U": 8.761034618005631,
+            "new_L": 2.0924775130531543,
+            "new_U": 8.761034618005631,
+            "rel_L": 0.0,
+            "rel_U": 0.0
+          }
+        },
+        "all_t_flag": "MISSING: pre-truncation snapshot only stores t in {25,50,100} (poly_bounds_pre_truncation_correction.json); full-horizon pre-correction curves were not saved.",
+        "max_eps_t_over_tips": 1.0613182579707442e-18,
+        "max_eps_t_over_audit_tips_source": "truncation_consistency_fix_report per_t",
+        "max_added_correction_over_all_t": 5.668487089364401e-10,
+        "max_added_correction_over_tips": 5.067452986783239e-10,
+        "max_added_correction_meaning": "max_t of (sqrt(Eq2_up * eps_out) + eps_out) inside TailLP bound()",
+        "baseline": "data/runs/diagnostics_v2/poly_bounds_pre_truncation_correction.json",
+        "corrected": "data/runs/continuous_baselines/<ex>/paper_continuous_arrays.npz (post consistency-fix audit)"
+      }
+    ],
+    "global_max_eps_over_tips": 1.0613182579707442e-18,
+    "global_max_added_correction_over_all_t": 4.602031979224831e-05
+  },
+  "5_sanity_flags": {
+    "mgf_valid": [
+      {
+        "example": "bridge_patrol",
+        "valid_any_false": false,
+        "valid_pos_all_true": true,
+        "valid_neg_all_true": true,
+        "grid_shape_pos": [
+          101,
+          33
+        ],
+        "grid_shape_neg": [
+          101,
+          49
+        ]
+      },
+      {
+        "example": "tiger",
+        "valid_any_false": false,
+        "valid_pos_all_true": true,
+        "valid_neg_all_true": true,
+        "grid_shape_pos": [
+          101,
+          33
+        ],
+        "grid_shape_neg": [
+          101,
+          33
+        ]
+      },
+      {
+        "example": "network",
+        "valid_any_false": false,
+        "valid_pos_all_true": true,
+        "valid_neg_all_true": true,
+        "grid_shape_pos": [
+          101,
+          41
+        ],
+        "grid_shape_neg": [
+          101,
+          41
+        ]
+      },
+      {
+        "example": "shopping5",
+        "valid_any_false": false,
+        "valid_pos_all_true": true,
+        "valid_neg_all_true": true,
+        "grid_shape_pos": [
+          101,
+          33
+        ],
+        "grid_shape_neg": [
+          101,
+          33
+        ]
+      },
+      {
+        "example": "mass_spring_damper",
+        "note": "N/A: continuous closed-form MGF/Chernoff (no eta-grid valid mask stored).",
+        "flag": "not_applicable"
+      },
+      {
+        "example": "coupled_masses",
+        "note": "N/A: continuous closed-form MGF/Chernoff (no eta-grid valid mask stored).",
+        "flag": "not_applicable"
+      },
+      {
+        "example": "quarter_car",
+        "note": "N/A: continuous closed-form MGF/Chernoff (no eta-grid valid mask stored).",
+        "flag": "not_applicable"
+      },
+      {
+        "example": "two_room_thermal",
+        "note": "N/A: continuous closed-form MGF/Chernoff (no eta-grid valid mask stored).",
+        "flag": "not_applicable"
+      },
+      {
+        "example": "cartpole_linear",
+        "note": "N/A: continuous closed-form MGF/Chernoff (no eta-grid valid mask stored).",
+        "flag": "not_applicable"
+      }
+    ],
+    "grid_extensions": [
+      {
+        "example": "bridge_patrol",
+        "n_lower_extensions": 0,
+        "n_upper_extensions": 0,
+        "raw": [],
+        "source": "summary.json lambda_expansions"
+      },
+      {
+        "example": "tiger",
+        "n_lower_extensions": 0,
+        "n_upper_extensions": 0,
+        "raw": [],
+        "source": "summary.json lambda_expansions"
+      },
+      {
+        "example": "network",
+        "n_lower_extensions": 1,
+        "n_upper_extensions": 0,
+        "raw": [
+          {
+            "low": true,
+            "high": false,
+            "range": [
+              0.001,
+              100.0
+            ]
+          }
+        ],
+        "source": "summary.json lambda_expansions"
+      },
+      {
+        "example": "shopping5",
+        "n_lower_extensions": 0,
+        "n_upper_extensions": 0,
+        "raw": [],
+        "source": "summary.json lambda_expansions"
+      }
+    ],
+    "n_inconsistent_paper_d16": [
+      {
+        "example": "mass_spring_damper",
+        "setting": "paper_d16_all_t_1_100",
+        "n_inconsistent_total": 0,
+        "n_inconsistent_ep2": 0,
+        "n_inconsistent_dot": 0,
+        "source": "truncation_consistency_fix_report.json"
+      },
+      {
+        "example": "coupled_masses",
+        "setting": "paper_d16_all_t_1_100",
+        "n_inconsistent_total": 0,
+        "n_inconsistent_ep2": 0,
+        "n_inconsistent_dot": 0,
+        "source": "truncation_consistency_fix_report.json"
+      },
+      {
+        "example": "quarter_car",
+        "setting": "paper_d16_all_t_1_100",
+        "n_inconsistent_total": 19,
+        "n_inconsistent_ep2": 19,
+        "n_inconsistent_dot": 0,
+        "source": "truncation_consistency_fix_report.json"
+      },
+      {
+        "example": "two_room_thermal",
+        "setting": "paper_d16_all_t_1_100",
+        "n_inconsistent_total": 0,
+        "n_inconsistent_ep2": 0,
+        "n_inconsistent_dot": 0,
+        "source": "truncation_consistency_fix_report.json"
+      },
+      {
+        "example": "cartpole_linear",
+        "setting": "paper_d16_all_t_1_100",
+        "n_inconsistent_total": 9,
+        "n_inconsistent_ep2": 9,
+        "n_inconsistent_dot": 0,
+        "source": "truncation_consistency_fix_report.json"
+      },
+      {
+        "example": "bridge_patrol",
+        "setting": "paper_d16_all_t_1_100",
+        "n_inconsistent_total": 0,
+        "note": "Finite runs store a single n_inconsistent counter (no eps_out CS split).",
+        "source": "summary.json poly_diagnostics.totals"
+      },
+      {
+        "example": "tiger",
+        "setting": "paper_d16_all_t_1_100",
+        "n_inconsistent_total": 0,
+        "note": "Finite runs store a single n_inconsistent counter (no eps_out CS split).",
+        "source": "summary.json poly_diagnostics.totals"
+      },
+      {
+        "example": "network",
+        "setting": "paper_d16_all_t_1_100",
+        "n_inconsistent_total": 0,
+        "note": "Finite runs store a single n_inconsistent counter (no eps_out CS split).",
+        "source": "summary.json poly_diagnostics.totals"
+      },
+      {
+        "example": "shopping5",
+        "setting": "paper_d16_all_t_1_100",
+        "n_inconsistent_total": 0,
+        "note": "Finite runs store a single n_inconsistent counter (no eps_out CS split).",
+        "source": "summary.json poly_diagnostics.totals"
+      }
+    ],
+    "n_inconsistent_ablation": [
+      {
+        "example": "cartpole_linear",
+        "kind": "continuous_lqg",
+        "degree": 4,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "cartpole_linear",
+        "kind": "continuous_lqg",
+        "degree": 8,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "cartpole_linear",
+        "kind": "continuous_lqg",
+        "degree": 16,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "cartpole_linear",
+        "kind": "continuous_lqg",
+        "degree": 20,
+        "n_inconsistent": 256,
+        "collapsed": false
+      },
+      {
+        "example": "cartpole_linear",
+        "kind": "continuous_lqg",
+        "degree": 24,
+        "n_inconsistent": 295,
+        "collapsed": false
+      },
+      {
+        "example": "coupled_masses",
+        "kind": "continuous_lqg",
+        "degree": 4,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "coupled_masses",
+        "kind": "continuous_lqg",
+        "degree": 8,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "coupled_masses",
+        "kind": "continuous_lqg",
+        "degree": 16,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "coupled_masses",
+        "kind": "continuous_lqg",
+        "degree": 20,
+        "n_inconsistent": 289,
+        "collapsed": false
+      },
+      {
+        "example": "coupled_masses",
+        "kind": "continuous_lqg",
+        "degree": 24,
+        "n_inconsistent": 291,
+        "collapsed": false
+      },
+      {
+        "example": "mass_spring_damper",
+        "kind": "continuous_lqg",
+        "degree": 4,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "mass_spring_damper",
+        "kind": "continuous_lqg",
+        "degree": 8,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "mass_spring_damper",
+        "kind": "continuous_lqg",
+        "degree": 16,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "mass_spring_damper",
+        "kind": "continuous_lqg",
+        "degree": 20,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "mass_spring_damper",
+        "kind": "continuous_lqg",
+        "degree": 24,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "network",
+        "kind": "finite_pomdp",
+        "degree": 4,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "network",
+        "kind": "finite_pomdp",
+        "degree": 8,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "network",
+        "kind": "finite_pomdp",
+        "degree": 16,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "network",
+        "kind": "finite_pomdp",
+        "degree": 20,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "network",
+        "kind": "finite_pomdp",
+        "degree": 24,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "quarter_car",
+        "kind": "continuous_lqg",
+        "degree": 4,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "quarter_car",
+        "kind": "continuous_lqg",
+        "degree": 8,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "quarter_car",
+        "kind": "continuous_lqg",
+        "degree": 16,
+        "n_inconsistent": 18,
+        "collapsed": false
+      },
+      {
+        "example": "quarter_car",
+        "kind": "continuous_lqg",
+        "degree": 20,
+        "n_inconsistent": 306,
+        "collapsed": false
+      },
+      {
+        "example": "quarter_car",
+        "kind": "continuous_lqg",
+        "degree": 24,
+        "n_inconsistent": 189,
+        "collapsed": false
+      },
+      {
+        "example": "shopping5",
+        "kind": "finite_pomdp",
+        "degree": 4,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "shopping5",
+        "kind": "finite_pomdp",
+        "degree": 8,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "shopping5",
+        "kind": "finite_pomdp",
+        "degree": 16,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "shopping5",
+        "kind": "finite_pomdp",
+        "degree": 20,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "shopping5",
+        "kind": "finite_pomdp",
+        "degree": 24,
+        "n_inconsistent": 6,
+        "collapsed": false
+      },
+      {
+        "example": "tiger",
+        "kind": "finite_pomdp",
+        "degree": 4,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "tiger",
+        "kind": "finite_pomdp",
+        "degree": 8,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "tiger",
+        "kind": "finite_pomdp",
+        "degree": 16,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "tiger",
+        "kind": "finite_pomdp",
+        "degree": 20,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "tiger",
+        "kind": "finite_pomdp",
+        "degree": 24,
+        "n_inconsistent": 1,
+        "collapsed": false
+      },
+      {
+        "example": "two_room_thermal",
+        "kind": "continuous_lqg",
+        "degree": 4,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "two_room_thermal",
+        "kind": "continuous_lqg",
+        "degree": 8,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "two_room_thermal",
+        "kind": "continuous_lqg",
+        "degree": 16,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "two_room_thermal",
+        "kind": "continuous_lqg",
+        "degree": 20,
+        "n_inconsistent": 0,
+        "collapsed": false
+      },
+      {
+        "example": "two_room_thermal",
+        "kind": "continuous_lqg",
+        "degree": 24,
+        "n_inconsistent": 0,
+        "collapsed": false
+      }
+    ]
+  },
+  "missing_or_estimated": [
+    "LQG Monte Carlo wall times: not in StageTimer for the paper continuous path (C reused from continuous_C.npz); filled via timing-only rerun with same seed/n_traj/T.",
+    "LQG MGF limits not timed separately from quadratic-form build; reported together as closed-form MGF series.",
+    "LQG total runtime is an estimated sum of components, not one StageTimer wall.",
+    "Truncation relative change over all t=1..100: MISSING (pre-correction snapshot tips-only).",
+    "Finite poly worker count logged explicitly only for bridge-patrol (=27); other finite examples inferred from the same default formula on this 28-logical-CPU machine.",
+    "Main/additional figure trajectory draw count is 500 in plotting code; per-run config n_draw=800 is unused by those scripts.",
+    "Continuous examples have no MGF grid `valid` mask (closed-form).",
+    "paper_continuous_summary.json truncation_at tips for quarter_car still show pre-fix L=57.65 while paper_continuous_arrays.npz has L=0 after the consistency-fix audit; tip comparison uses arrays vs pre JSON."
+  ]
+}
